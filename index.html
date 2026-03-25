@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelia — Elegant Dresses for Every Occasion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.loli.net/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    gold: { DEFAULT: '#C9A84C', dark: '#A8873A', light: '#D4B96A', '50': '#FBF8F0' },
+                    rosegold: { DEFAULT: '#B76E79', light: '#D4949D', dark: '#9A5560' },
+                    ivory: '#FAF8F5',
+                    charcoal: '#1A1A1A',
+                },
+                fontFamily: {
+                    display: ['Playfair Display', 'serif'],
+                    body: ['Inter', 'sans-serif'],
+                }
+            }
+        }
+    }
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Announcement bar rotation */
+        .announce-track { display: flex; transition: transform 0.5s ease; }
+
+        /* Shimmer gold text */
+        .shimmer {
+            background: linear-gradient(90deg, #C9A84C 0%, #f0dfa0 40%, #fff 50%, #f0dfa0 60%, #C9A84C 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+
+        /* Hero carousel */
+        .hero-slide {
+            position: absolute; inset: 0;
+            opacity: 0;
+            transition: opacity 1.4s ease-in-out;
+        }
+        .hero-slide.active { opacity: 1; }
+        .hero-slide img {
+            animation: kenburns 22s ease-in-out alternate infinite;
+        }
+        .hero-slide:nth-child(2) img { animation-delay: -7s; }
+        .hero-slide:nth-child(3) img { animation-delay: -14s; }
+        @keyframes kenburns {
+            0% { transform: scale(1) translate(0,0); }
+            100% { transform: scale(1.1) translate(-1%, -1%); }
+        }
+        .hero-dot { transition: all 0.4s ease; }
+        .hero-dot.active { background: #C9A84C !important; width: 32px; }
+
+        .hero-product-badge {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .hero-product-badge.fade-out {
+            opacity: 0; transform: translateY(10px) translateX(0);
+        }
+
+        /* Outline button matching gold style */
+        .btn-gold-outline {
+            border: 2px solid rgba(255,255,255,0.5);
+            color: #fff;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            background: rgba(255,255,255,0.06);
+        }
+        .btn-gold-outline:hover {
+            border-color: #C9A84C;
+            background: rgba(201,168,76,0.15);
+            box-shadow: 0 4px 16px rgba(201,168,76,0.2);
+        }
+
+        /* Fade-up reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Quiz step transitions */
+        .quiz-step {
+            display: none;
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 0.45s ease, transform 0.45s ease;
+        }
+        .quiz-step.active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .quiz-step.exit-left {
+            display: block;
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        /* Quiz glow container */
+        .quiz-glow {
+            border: 1.5px solid rgba(201,168,76,0.3);
+            box-shadow:
+                0 0 0 1px rgba(201,168,76,0.06),
+                0 0 25px rgba(201,168,76,0.1),
+                0 0 80px rgba(201,168,76,0.05),
+                0 8px 40px rgba(0,0,0,0.04);
+            background: linear-gradient(180deg, #FFFDF8 0%, #FAF8F5 100%);
+        }
+
+        /* Option card */
+        .opt-card {
+            border: 2px solid #e5e1d8;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+            overflow: hidden;
+        }
+        .opt-card img { transition: transform 0.3s ease; }
+        .opt-card:hover img { transform: scale(1.06); }
+        .opt-card:hover {
+            border-color: #C9A84C;
+            box-shadow: 0 0 0 1px #C9A84C;
+        }
+        .opt-card.selected {
+            border-color: #C9A84C;
+            background: #FBF8F0;
+            box-shadow: 0 0 0 2px #C9A84C;
+        }
+        .opt-card.selected .check-mark { display: flex; }
+        .check-mark {
+            display: none;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #C9A84C;
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            position: absolute;
+            top: 8px; right: 8px;
+        }
+
+        /* Color swatch */
+        .color-swatch {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .color-swatch:hover { transform: scale(1.12); }
+        .color-swatch.selected {
+            border-color: #C9A84C;
+            box-shadow: 0 0 0 2px #C9A84C;
+        }
+        .color-swatch.selected::after {
+            content: '✓';
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 16px;
+            text-shadow: 0 1px 3px rgba(0,0,0,.5);
+        }
+
+        /* Product card */
+        .product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+
+        /* Review carousel */
+        .reviews-track { display: flex; gap: 20px; will-change: transform; }
+        .review-card { min-width: 280px; max-width: 280px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.06); border: 1px solid #f0ece8; flex-shrink: 0; transition: transform .3s, box-shadow .3s; }
+        .review-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+        .review-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+        .review-card .review-body { padding: 16px; }
+        .review-card .shop-look { display: inline-flex; align-items: center; gap: 4px; color: #b8860b; font-size: 13px; font-weight: 600; text-decoration: none; transition: gap .25s; }
+        .review-card .shop-look:hover { gap: 8px; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Floating pulse */
+        @keyframes float-pulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(201,168,76,0.4); }
+            50% { box-shadow: 0 4px 30px rgba(201,168,76,0.7); }
+        }
+        .float-btn { animation: float-pulse 2.5s ease-in-out infinite; }
+
+        /* Modal backdrop */
+        .modal-backdrop {
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(4px);
+            transition: opacity 0.35s ease;
+        }
+
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FAF8F5; }
+        ::-webkit-scrollbar-thumb { background: #C9A84C; border-radius: 4px; }
+
+        /* Nav shadow on scroll */
+        .nav-scrolled { box-shadow: 0 2px 20px rgba(0,0,0,.08); }
+
+        /* Size button */
+        .size-btn {
+            width: 56px; height: 56px; border-radius: 50%;
+            border: 2px solid #e5e1d8;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+            font-weight: 500;
+        }
+        .size-btn:hover { border-color: #C9A84C; }
+        .size-btn.selected { background: #C9A84C; color: #fff; border-color: #C9A84C; }
+
+        /* Scene card overlay */
+        .scene-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.1) 60%, transparent 100%);
+            border-radius: 12px;
+            transition: background 0.3s ease;
+        }
+        .scene-card:hover::after {
+            background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.2) 60%, rgba(0,0,0,.05) 100%);
+        }
+        .scene-card:hover img { transform: scale(1.06); }
+
+        /* Gradient button */
+        .btn-ai-glow {
+            background: linear-gradient(135deg, #C9A84C, #D4B96A, #E8D48B);
+            background-size: 200% 200%;
+            animation: ai-glow-shift 3s ease infinite;
+            box-shadow: 0 0 20px rgba(201,168,76,.4), 0 0 40px rgba(201,168,76,.15);
+            position: relative;
+        }
+        .btn-ai-glow:hover {
+            box-shadow: 0 0 25px rgba(201,168,76,.55), 0 0 60px rgba(201,168,76,.25);
+            transform: translateY(-1px);
+        }
+        .btn-ai-glow::before {
+            content: ''; position: absolute; inset: -2px; border-radius: inherit;
+            background: linear-gradient(135deg, rgba(201,168,76,.6), rgba(232,212,139,.3), rgba(201,168,76,.6));
+            background-size: 300% 300%; animation: ai-glow-shift 3s ease infinite; z-index: -1; filter: blur(6px);
+        }
+        @keyframes ai-glow-shift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #C9A84C, #D4B96A);
+            color: #fff;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #A8873A, #C9A84C);
+            box-shadow: 0 4px 16px rgba(201,168,76,0.4);
+        }
+
+        /* Discount code reveal */
+        .discount-code {
+            border: 2px dashed #C9A84C;
+            background: #FBF8F0;
+            letter-spacing: 3px;
+        }
+
+        /* Smart finder slide */
+        .smart-finder { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+        .smart-finder.open { max-height: 400px; }
+
+        /* Chat widget slide */
+        .chat-widget {
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .chat-widget.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .chat-chip {
+            padding: 6px 14px; border-radius: 20px; font-size: 13px; background: #faf8f5; border: 1px solid #e8e0d5;
+            color: #3a3a3a; cursor: pointer; transition: all .2s; white-space: nowrap;
+        }
+        .chat-chip:hover { background: linear-gradient(135deg,#C9A84C20,#D4A97420); border-color: #C9A84C; }
+        .chat-bubble-bot { background: #faf8f5; border-radius: 18px 18px 18px 4px; }
+        .chat-bubble-user { background: linear-gradient(135deg,#C9A84C,#D4A974); color: #fff; border-radius: 18px 18px 4px 18px; }
+        .chat-typing span { width: 6px; height: 6px; background: #C9A84C; border-radius: 50%; display: inline-block; animation: typingDot 1.4s infinite; }
+        .chat-typing span:nth-child(2) { animation-delay: .2s; }
+        .chat-typing span:nth-child(3) { animation-delay: .4s; }
+        @keyframes typingDot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    </style>
+</head>
+<body class="font-body bg-ivory text-charcoal">
+
+<!-- ============ 1. ANNOUNCEMENT BAR ============ -->
+<div id="announcement-bar" class="bg-charcoal text-white py-2.5 text-sm relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 text-center h-5 overflow-hidden">
+        <div class="announce-track flex flex-col" id="announceTrack">
+            <div class="announce-item flex items-center justify-center gap-2 h-5 shrink-0">
+                <i class="fa-solid fa-truck-fast text-gold text-xs"></i>
+                <span>Free Shipping on Orders Over <strong>$79</strong></span>
+            </div>
+            <div class="announce-item flex items-center justify-center gap-2 h-5 shrink-0">
+                <i class="fa-solid fa-rotate-left text-gold text-xs"></i>
+                <span><strong>30-Day</strong> Easy Returns &amp; Exchanges</span>
+            </div>
+            <div class="announce-item flex items-center justify-center gap-2 h-5 shrink-0">
+                <i class="fa-solid fa-lock text-gold text-xs"></i>
+                <span>Secure Checkout Guaranteed</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ 2. NAVIGATION ============ -->
+<nav id="navbar" class="bg-white sticky top-0 z-50 transition-shadow duration-300">
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+        <a href="#" class="font-display text-2xl font-bold text-charcoal tracking-wide" style="color:#A8873A;">Aurelia</a>
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+            <a href="#" class="hover:text-gold transition-colors">New Arrivals</a>
+            <a href="#" class="hover:text-gold transition-colors">Best Sellers</a>
+            <a href="#" class="hover:text-gold transition-colors">Dresses</a>
+            <a href="#scenes" class="hover:text-gold transition-colors">Occasions</a>
+            <a href="#" class="hover:text-gold transition-colors relative">
+                Sale
+                <span class="absolute -top-2 -right-5 bg-rosegold text-white text-[10px] px-1.5 rounded-full">HOT</span>
+            </a>
+        </div>
+        <div class="flex items-center gap-5 text-charcoal">
+            <button class="hover:text-gold transition-colors"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="hover:text-gold transition-colors"><i class="fa-regular fa-user"></i></button>
+            <button class="hover:text-gold transition-colors relative">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="absolute -top-2 -right-2 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">0</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ============ 3. HERO ============ -->
+<section id="hero" class="relative h-[85vh] min-h-[600px] overflow-hidden flex items-center">
+    <!-- Carousel background slides -->
+    <div class="hero-slide active" data-slide="0">
+        <img src="images/hero1.png" alt="Celestia A-Line Gown" class="w-full h-full object-cover">
+    </div>
+    <div class="hero-slide" data-slide="1">
+        <img src="images/hero2.png" alt="Stardust Sequin Gown" class="w-full h-full object-cover">
+    </div>
+    <div class="hero-slide" data-slide="2">
+        <img src="images/hero3.png" alt="Evangeline Ball Gown" class="w-full h-full object-cover">
+    </div>
+
+    <!-- Gradient overlays -->
+    <div class="absolute inset-0 bg-gradient-to-r from-charcoal/85 via-charcoal/55 to-charcoal/20 z-[1]"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-charcoal/10 z-[1]"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
+        <div class="max-w-2xl">
+            <p class="text-gold-light text-sm tracking-[4px] uppercase mb-4 reveal">The Art of Elegance</p>
+            <h1 class="font-display text-5xl md:text-6xl lg:text-7xl text-white leading-tight mb-6 reveal" style="transition-delay:.1s">
+                Where Elegance Meets<br>
+                <span class="shimmer">Every Occasion</span>
+            </h1>
+            <p class="text-white/80 text-lg mb-8 max-w-lg reveal" style="transition-delay:.2s">
+                Stunning formal dresses designed to make you unforgettable — starting from just $39.99
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex items-center gap-4 reveal" style="transition-delay:.3s">
+                <a href="#quiz" class="btn-ai-glow text-white px-8 py-4 rounded-full font-semibold text-sm tracking-wide inline-flex items-center gap-2.5 transition-all duration-300">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14 2 9.2h7.6z" fill="currentColor" opacity=".25"/><circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4l1.4-1.4M17 7l1.4-1.4"/></svg>
+                    <span>Find My Perfect Dress</span>
+                    <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-bold tracking-wider">AI</span>
+                </a>
+                <a href="#scenes" class="btn-gold-outline px-8 py-3.5 rounded-full font-semibold text-sm tracking-wide inline-block">
+                    Find Your Moment
+                </a>
+            </div>
+
+            <!-- Rating + link to reviews -->
+            <a href="#reviews" class="flex items-center gap-5 mt-10 reveal group cursor-pointer" style="transition-delay:.4s">
+                <div class="flex items-center gap-1.5">
+                    <div class="flex text-gold text-xs gap-0.5">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <span class="text-white/70 text-sm">4.8/5</span>
+                </div>
+                <span class="text-white/30">|</span>
+                <span class="text-white/70 text-sm group-hover:text-white transition-colors">3,200+ Happy Customers</span>
+                <i class="fa-solid fa-arrow-right text-white/40 text-xs group-hover:text-gold group-hover:translate-x-1 transition-all"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Right-side featured product card -->
+    <div id="heroProductCard" class="hero-product-badge absolute right-10 top-1/2 -translate-y-1/2 z-20">
+        <a href="#" class="block bg-white/8 backdrop-blur-md rounded-2xl px-6 py-5 border border-white/12 text-center hover:bg-white/12 hover:border-white/20 transition-all group" style="min-width:170px">
+            <p class="text-white/50 text-[10px] uppercase tracking-[2px] mb-2" id="heroProductTag">Best Sellers</p>
+            <p class="text-white font-display text-base leading-snug mb-3" id="heroProductName">Blush Chiffon<br>Wrap Dress</p>
+            <span class="inline-flex items-center gap-1.5 text-gold text-xs font-semibold group-hover:gap-2.5 transition-all">
+                Shop Now <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </span>
+        </a>
+    </div>
+
+    <!-- Slide dots -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        <button class="hero-dot active w-8 h-1.5 rounded-full bg-white/30 cursor-pointer" data-dot="0"></button>
+        <button class="hero-dot w-5 h-1.5 rounded-full bg-white/30 cursor-pointer" data-dot="1"></button>
+        <button class="hero-dot w-5 h-1.5 rounded-full bg-white/30 cursor-pointer" data-dot="2"></button>
+    </div>
+</section>
+
+<!-- ============ 4. SCENES / OCCASIONS ============ -->
+<section id="scenes" class="py-20 max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14 reveal">
+        <p class="text-gold text-sm tracking-[3px] uppercase mb-3">Shop by Occasion</p>
+        <h2 class="font-display text-4xl text-charcoal">Find Your Moment</h2>
+    </div>
+    <div class="grid grid-cols-4 gap-6">
+        <!-- Scene 1: Wedding Guest -->
+        <a href="#" class="scene-card relative rounded-xl overflow-hidden aspect-[3/4] group reveal" style="transition-delay:.05s">
+            <img src="images/scene-wedding.png"
+                 alt="Wedding Guest" class="w-full h-full object-cover transition-transform duration-500"
+                 onerror="this.parentElement.style.background='linear-gradient(145deg,#f5e6e8,#e8d5d8)'">
+            <div class="absolute bottom-0 left-0 right-0 z-10 p-6">
+                <p class="text-gold text-[10px] font-bold tracking-[2px] uppercase mb-1.5">Wedding Guest</p>
+                <h3 class="font-display text-2xl text-white mb-1">Steal the Scene</h3>
+                <p class="text-white/60 text-sm mb-3">Graceful dresses for celebrations of love</p>
+                <span class="text-white text-xs font-semibold inline-flex items-center gap-1.5 group-hover:text-gold transition-colors">
+                    Shop Now <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </span>
+            </div>
+        </a>
+        <!-- Scene 2: Prom Night -->
+        <a href="#" class="scene-card relative rounded-xl overflow-hidden aspect-[3/4] group reveal" style="transition-delay:.1s">
+            <img src="images/scene-prom.png"
+                 alt="Prom Night" class="w-full h-full object-cover transition-transform duration-500"
+                 onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e0f0,#d8d0e8)'">
+            <div class="absolute bottom-0 left-0 right-0 z-10 p-6">
+                <p class="text-gold text-[10px] font-bold tracking-[2px] uppercase mb-1.5">Prom Night</p>
+                <h3 class="font-display text-2xl text-white mb-1">Your Night to Shine</h3>
+                <p class="text-white/60 text-sm mb-3">Dazzling looks for a once-in-a-lifetime moment</p>
+                <span class="text-white text-xs font-semibold inline-flex items-center gap-1.5 group-hover:text-gold transition-colors">
+                    Shop Now <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </span>
+            </div>
+        </a>
+        <!-- Scene 3: Cocktail & Party -->
+        <a href="#" class="scene-card relative rounded-xl overflow-hidden aspect-[3/4] group reveal" style="transition-delay:.15s">
+            <img src="images/scene-cocktail.png"
+                 alt="Cocktail & Party" class="w-full h-full object-cover transition-transform duration-500"
+                 onerror="this.parentElement.style.background='linear-gradient(145deg,#e0e4e8,#d0d5d8)'">
+            <div class="absolute bottom-0 left-0 right-0 z-10 p-6">
+                <p class="text-gold text-[10px] font-bold tracking-[2px] uppercase mb-1.5">Cocktail &amp; Party</p>
+                <h3 class="font-display text-2xl text-white mb-1">Elegance on the Rocks</h3>
+                <p class="text-white/60 text-sm mb-3">Sophisticated styles for every soirée</p>
+                <span class="text-white text-xs font-semibold inline-flex items-center gap-1.5 group-hover:text-gold transition-colors">
+                    Shop Now <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </span>
+            </div>
+        </a>
+        <!-- Scene 4: Date Night -->
+        <a href="#" class="scene-card relative rounded-xl overflow-hidden aspect-[3/4] group reveal" style="transition-delay:.2s">
+            <img src="images/scene-datenight.png"
+                 alt="Date Night" class="w-full h-full object-cover transition-transform duration-500"
+                 onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e4e0,#e0d0c8)'">
+            <div class="absolute bottom-0 left-0 right-0 z-10 p-6">
+                <p class="text-gold text-[10px] font-bold tracking-[2px] uppercase mb-1.5">Date Night</p>
+                <h3 class="font-display text-2xl text-white mb-1">Dress to Captivate</h3>
+                <p class="text-white/60 text-sm mb-3">Effortlessly alluring, unforgettably you</p>
+                <span class="text-white text-xs font-semibold inline-flex items-center gap-1.5 group-hover:text-gold transition-colors">
+                    Shop Now <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </span>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- ============ 5. INTERACTIVE QUIZ ============ -->
+<section id="quiz" class="py-20 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-12 reveal">
+            <p class="text-gold text-sm tracking-[3px] uppercase mb-3">Personalized For You</p>
+            <h2 class="font-display text-4xl text-charcoal mb-3">Let Us Find Your Dream Dress</h2>
+            <p class="text-gray-500 text-base">Answer a few quick questions — your personalized picks are moments away</p>
+        </div>
+
+        <div id="quizContainer" class="quiz-glow rounded-2xl overflow-hidden reveal">
+            <!-- Progress Bar -->
+            <div class="h-1 bg-gold/10">
+                <div id="quizProgress" class="h-full bg-gradient-to-r from-gold to-gold-light rounded-full transition-all duration-500" style="width:0%"></div>
+            </div>
+
+            <div class="p-8 md:p-12 min-h-[480px] flex flex-col">
+                <!-- Step 0: Occasion -->
+                <div class="quiz-step active" data-step="0">
+                    <h3 class="font-display text-2xl mb-2 text-center text-gold">What's the occasion?</h3>
+                    <p class="text-gray-400 text-sm mb-8 text-center">Select one or more — or skip if you're just browsing</p>
+                    <div class="grid grid-cols-6 gap-3" data-field="occasion" data-multi="true">
+                        <div class="opt-card relative" data-value="wedding">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-wedding.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f5e6e8,#e8d5d8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Wedding Guest</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="prom">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-prom.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e0f0,#d8d0e8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Prom Night</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="cocktail">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-cocktail.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e0e4e8,#d0d5d8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Cocktail &amp; Party</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="date">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-date.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e4e0,#e0d0c8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Date Night</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="formal">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-formal.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e4f0,#d8d4e8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Formal Event</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="other">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-other.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0ece0,#e8e0d0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Surprise Me</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Style Vibe -->
+                <div class="quiz-step" data-step="1">
+                    <h3 class="font-display text-2xl mb-2 text-center text-gold">What's your style vibe?</h3>
+                    <p class="text-gray-400 text-sm mb-8 text-center">Pick the aesthetic that speaks to you</p>
+                    <div class="grid grid-cols-6 gap-3" data-field="vibe" data-multi="true">
+                        <div class="opt-card relative" data-value="classic">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-classic.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e4e0,#d8d4d0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Classic &amp; Timeless</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="romantic">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-romantic.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f5e6e8,#e8d5d8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Romantic &amp; Dreamy</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="bold">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-bold.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8d0d0,#d8c0c0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Bold &amp; Glamorous</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="minimal">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-minimal.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0f0ee,#e8e8e4)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Minimalist &amp; Modern</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="boho">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-boho.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8ece0,#d8e0d0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Bohemian &amp; Free</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="any_vibe">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-all.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e8f0,#e0d8e0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Show Me Everything</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Color -->
+                <div class="quiz-step" data-step="2">
+                    <h3 class="font-display text-2xl mb-2 text-center text-gold">Which colors speak to you?</h3>
+                    <p class="text-gray-400 text-sm mb-8 text-center">Select as many as you'd like</p>
+                    <div class="flex flex-wrap justify-center gap-6" data-field="colors" data-multi="true">
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#1a1a1a" data-value="black"></div><span class="text-xs text-gray-500">Black</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#c0392b" data-value="red"></div><span class="text-xs text-gray-500">Red</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#1a3a5c" data-value="navy"></div><span class="text-xs text-gray-500">Navy</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#f0c4c8" data-value="blush"></div><span class="text-xs text-gray-500">Blush Pink</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#1a6b4a" data-value="emerald"></div><span class="text-xs text-gray-500">Emerald</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#722f37" data-value="burgundy"></div><span class="text-xs text-gray-500">Burgundy</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#C9A84C" data-value="gold"></div><span class="text-xs text-gray-500">Gold</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#b399d4" data-value="lavender"></div><span class="text-xs text-gray-500">Lavender</span></div>
+                        <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#f5f0e8" data-value="ivory"></div><span class="text-xs text-gray-500">Ivory</span></div>
+                    </div>
+                    <div class="text-center mt-6">
+                        <button class="text-gold text-sm font-medium hover:underline" onclick="quiz.selectAll('colors')">Open to any color</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Length -->
+                <div class="quiz-step" data-step="3">
+                    <h3 class="font-display text-2xl mb-2 text-center text-gold">How long do you want to go?</h3>
+                    <p class="text-gray-400 text-sm mb-8 text-center">Choose your preferred dress length</p>
+                    <div class="grid grid-cols-4 gap-4 max-w-2xl mx-auto" data-field="length" data-multi="false">
+                        <div class="opt-card relative" data-value="maxi">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/length-maxi.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e8f0,#e0d8e0)'"></div>
+                            <div class="py-2.5 px-1 text-center">
+                                <div class="font-semibold text-xs">Maxi</div>
+                                <div class="text-[10px] text-gray-400">Floor-length</div>
+                            </div>
+                        </div>
+                        <div class="opt-card relative" data-value="midi">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/length-midi.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e4f0,#d8d0e0)'"></div>
+                            <div class="py-2.5 px-1 text-center">
+                                <div class="font-semibold text-xs">Midi</div>
+                                <div class="text-[10px] text-gray-400">Below knee</div>
+                            </div>
+                        </div>
+                        <div class="opt-card relative" data-value="mini">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/length-mini.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e4e0,#e0d4d0)'"></div>
+                            <div class="py-2.5 px-1 text-center">
+                                <div class="font-semibold text-xs">Mini</div>
+                                <div class="text-[10px] text-gray-400">Above knee</div>
+                            </div>
+                        </div>
+                        <div class="opt-card relative" data-value="any_length">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/length-any.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0ece0,#e8e0d0)'"></div>
+                            <div class="py-2.5 px-1 text-center">
+                                <div class="font-semibold text-xs">Any Length</div>
+                                <div class="text-[10px] text-gray-400">Show all</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Silhouette -->
+                <div class="quiz-step" data-step="4">
+                    <h3 class="font-display text-2xl mb-2 text-center text-gold">Pick your favorite silhouette</h3>
+                    <p class="text-gray-400 text-sm mb-8 text-center">What shape flatters you best?</p>
+                    <div class="grid grid-cols-6 gap-3" data-field="silhouette" data-multi="true">
+                        <div class="opt-card relative" data-value="a-line">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-aline.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e8e8,#e0d8d8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">A-Line</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="mermaid">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-mermaid.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e0f0,#d8d0e0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Mermaid</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="bodycon">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-bodycon.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e4e4e8,#d4d4d8)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Bodycon</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="empire">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-empire.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e8f0,#e0d8e0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Empire Waist</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="wrap">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-wrap.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8ece0,#d8e0d0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Wrap</div></div>
+                        </div>
+                        <div class="opt-card relative" data-value="any_silhouette">
+                            <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
+                            <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-all.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0ece0,#e8e0d0)'"></div>
+                            <div class="py-2.5 px-1 text-center"><div class="font-semibold text-xs">Show Me All</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Size -->
+                <div class="quiz-step" data-step="5">
+                    <h3 class="font-display text-2xl mb-2 text-center text-gold">What's your size?</h3>
+                    <p class="text-gray-400 text-sm mb-8 text-center">We'll use this to show you the best fit</p>
+                    <div class="flex flex-wrap justify-center gap-4 mb-6" data-field="size" data-multi="false">
+                        <div class="size-btn" data-value="XS">XS</div>
+                        <div class="size-btn" data-value="S">S</div>
+                        <div class="size-btn" data-value="M">M</div>
+                        <div class="size-btn" data-value="L">L</div>
+                        <div class="size-btn" data-value="XL">XL</div>
+                        <div class="size-btn" data-value="2XL">2XL</div>
+                        <div class="size-btn" data-value="3XL">3XL</div>
+                    </div>
+                    <div class="text-center">
+                        <button id="smartSizeToggle" class="text-gold text-sm font-medium hover:underline inline-flex items-center gap-1">
+                            Not sure? Try our <strong>Smart Size Finder</strong> <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                        </button>
+                    </div>
+                    <div id="smartFinder" class="smart-finder mt-6">
+                        <div class="bg-white rounded-xl p-6 border border-gold/20 max-w-lg mx-auto">
+                            <h4 class="font-display text-lg mb-4 text-center text-gold">Smart Size Finder</h4>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="text-xs font-medium text-gray-500 mb-1 block">Height</label>
+                                    <select id="sfHeight" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-gold">
+                                        <option value="">Select</option>
+                                        <option>4'10" (147cm)</option><option>4'11" (150cm)</option>
+                                        <option>5'0" (152cm)</option><option>5'1" (155cm)</option>
+                                        <option>5'2" (157cm)</option><option>5'3" (160cm)</option>
+                                        <option>5'4" (163cm)</option><option>5'5" (165cm)</option>
+                                        <option>5'6" (168cm)</option><option>5'7" (170cm)</option>
+                                        <option>5'8" (173cm)</option><option>5'9" (175cm)</option>
+                                        <option>5'10" (178cm)</option><option>5'11" (180cm)</option>
+                                        <option>6'0" (183cm)</option><option>6'1" (185cm)</option>
+                                        <option>6'2"+ (188cm+)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-gray-500 mb-1 block">Weight</label>
+                                    <select id="sfWeight" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-gold">
+                                        <option value="">Select</option>
+                                        <option>90-110 lbs</option><option>110-130 lbs</option>
+                                        <option>130-150 lbs</option><option>150-170 lbs</option>
+                                        <option>170-190 lbs</option><option>190-210 lbs</option>
+                                        <option>210-230 lbs</option><option>230+ lbs</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-gray-500 mb-1 block">Fit Preference</label>
+                                    <select id="sfFit" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-gold">
+                                        <option value="">Select</option>
+                                        <option>Prefer Loose</option>
+                                        <option>True to Size</option>
+                                        <option>Prefer Fitted</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="sfRecommend" class="btn-gold w-full mt-4 py-2.5 rounded-lg text-sm font-semibold">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Find My Size
+                            </button>
+                            <div id="sfResult" class="hidden mt-4 text-center py-3 bg-gold-50 rounded-lg border border-gold/20">
+                                <span class="text-sm text-gray-600">We recommend</span>
+                                <span id="sfSizeResult" class="font-bold text-gold text-lg mx-2">M</span>
+                                <span class="text-sm text-gray-600">for you ✓</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: RESULTS -->
+                <div class="quiz-step" data-step="6">
+                    <div id="resultsContent"></div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="mt-auto pt-6 flex items-center justify-between" id="quizNav">
+                    <button id="quizBack" class="text-gray-400 hover:text-charcoal transition-colors text-sm flex items-center gap-1 invisible">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> Back
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <button id="quizSkip" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Skip</button>
+                        <button id="quizNext" class="btn-gold px-7 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2">
+                            Next <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 6. REVIEWS ============ -->
+<section id="reviews" class="py-20 max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14 reveal">
+        <p class="text-gold text-sm tracking-[3px] uppercase mb-3">Real Stories</p>
+        <h2 class="font-display text-4xl text-charcoal mb-3">Loved by 3,200+ Customers</h2>
+        <div class="flex items-center justify-center gap-2 mt-3">
+            <div class="flex text-gold gap-0.5 text-sm">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            </div>
+            <span class="text-gray-500 text-sm">4.8 out of 5</span>
+        </div>
+    </div>
+    <div class="relative reveal" id="reviewsCarousel">
+        <div class="overflow-hidden">
+            <div class="reviews-track" id="reviewsTrack"></div>
+        </div>
+        <button id="revPrev" class="absolute left-3 top-[35%] -translate-y-1/2 w-11 h-11 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center hover:bg-gold hover:text-white transition-all z-10 opacity-0 group-hover:opacity-100" style="opacity:0.9">
+            <i class="fa-solid fa-chevron-left text-sm"></i>
+        </button>
+        <button id="revNext" class="absolute right-3 top-[35%] -translate-y-1/2 w-11 h-11 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center hover:bg-gold hover:text-white transition-all z-10" style="opacity:0.9">
+            <i class="fa-solid fa-chevron-right text-sm"></i>
+        </button>
+    </div>
+</section>
+
+<!-- ============ 7. NEWSLETTER / LEAD CAPTURE ============ -->
+<section id="newsletter" class="py-20 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-gold-dark via-gold to-rosegold"></div>
+    <div class="absolute inset-0 opacity-10" style="background-image:url('data:image/svg+xml,<svg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\"><g fill=\"%23ffffff\" fill-opacity=\"0.4\"><path d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/></g></g></svg>');"></div>
+    <div class="relative z-10 max-w-xl mx-auto px-6 text-center reveal">
+        <h2 class="font-display text-4xl text-white mb-3">Stay in the Glow</h2>
+        <p class="text-white/80 mb-2">Be the first to know about new arrivals, exclusive offers &amp; styling tips.</p>
+        <p class="text-white font-semibold text-sm mb-8">Subscribe &amp; get 15% off your first order ✨</p>
+        <div id="nlForm" class="flex gap-3 max-w-md mx-auto mb-4">
+            <input type="email" id="nlEmail" placeholder="Enter your email" class="flex-1 px-5 py-3 rounded-full bg-white/20 border border-white/30 text-white placeholder-white/60 text-sm focus:outline-none focus:border-white">
+            <button id="nlSubmit" class="bg-charcoal text-white px-7 py-3 rounded-full text-sm font-semibold whitespace-nowrap hover:bg-charcoal/80 transition-colors">Subscribe</button>
+        </div>
+        <div id="nlSuccess" class="hidden">
+            <div class="discount-code inline-block px-6 py-3 rounded-lg bg-white/20 text-white font-bold text-xl mb-3">AURELIA15</div>
+            <p class="text-white/80 text-sm">Your 15% off code! Also sent to your inbox.</p>
+        </div>
+        <p class="text-white/60 text-xs mt-4">We respect your privacy. Unsubscribe with one click. <a href="#" class="underline hover:text-white">Privacy Policy</a></p>
+    </div>
+</section>
+
+<!-- ============ 8. FOOTER ============ -->
+<footer class="bg-charcoal text-white/70 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-5 gap-8 pb-12 border-b border-white/10">
+            <!-- Brand -->
+            <div class="col-span-2">
+                <span class="font-display text-2xl font-bold text-white" style="color:#C9A84C;">Aurelia</span>
+                <p class="text-sm mt-4 leading-relaxed max-w-xs">Elegant dresses for every occasion, every body, every budget. Making you feel unforgettable since 2024.</p>
+                <div class="flex gap-4 mt-6">
+                    <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-instagram text-lg"></i></a>
+                    <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-tiktok text-lg"></i></a>
+                    <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-pinterest text-lg"></i></a>
+                    <a href="#" class="hover:text-gold transition-colors"><i class="fa-brands fa-facebook text-lg"></i></a>
+                </div>
+            </div>
+            <!-- Shop -->
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Shop</h4>
+                <ul class="space-y-2.5 text-sm">
+                    <li><a href="#" class="hover:text-gold transition-colors">New Arrivals</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Best Sellers</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Wedding Guest</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Cocktail Dresses</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Sale</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">All Dresses</a></li>
+                </ul>
+            </div>
+            <!-- Help -->
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Customer Care</h4>
+                <ul class="space-y-2.5 text-sm">
+                    <li><a href="#" class="hover:text-gold transition-colors">Contact Us</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Shipping &amp; Delivery</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Returns &amp; Exchanges</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Size Guide</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">FAQ</a></li>
+                </ul>
+            </div>
+            <!-- About -->
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">About</h4>
+                <ul class="space-y-2.5 text-sm">
+                    <li><a href="#" class="hover:text-gold transition-colors">Our Story</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Blog</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Careers</a></li>
+                    <li><a href="#" class="hover:text-gold transition-colors">Press</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Bottom bar -->
+        <div class="pt-8 flex items-center justify-between text-xs text-white/40">
+            <p>&copy; 2026 Aurelia. All rights reserved.</p>
+            <div class="flex items-center gap-4">
+                <a href="#" class="hover:text-white/60 transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-white/60 transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-white/60 transition-colors">Cookie Policy</a>
+            </div>
+            <div class="flex items-center gap-3 text-lg text-white/30">
+                <i class="fa-brands fa-cc-visa"></i>
+                <i class="fa-brands fa-cc-mastercard"></i>
+                <i class="fa-brands fa-cc-amex"></i>
+                <i class="fa-brands fa-cc-paypal"></i>
+                <i class="fa-brands fa-cc-apple-pay"></i>
+                <i class="fa-brands fa-google-pay"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- ============ 9. COUPON MODAL ============ -->
+<div id="couponModal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+    <div class="modal-backdrop absolute inset-0" onclick="closeCouponModal()"></div>
+    <div class="relative z-10 bg-white rounded-2xl shadow-2xl overflow-hidden max-w-[680px] w-full mx-4 flex">
+        <!-- Left visual -->
+        <div class="w-[280px] shrink-0 hidden md:block relative overflow-hidden">
+            <img src="images/reviews/review-01.jpg"
+                 alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
+            <div class="absolute inset-0 bg-gradient-to-t from-charcoal/60 to-transparent"></div>
+            <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(201,168,76,.2), rgba(183,110,121,.2))"></div>
+        </div>
+        <!-- Right content -->
+        <div class="flex-1 p-8 md:p-10 flex flex-col justify-center">
+            <button onclick="closeCouponModal()" class="absolute top-4 right-4 text-gray-400 hover:text-charcoal transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <p class="text-gold text-sm tracking-[3px] uppercase mb-2">Welcome Gift</p>
+            <h3 class="font-display text-3xl text-charcoal mb-2">Get <span class="text-gold">15% Off</span></h3>
+            <p class="text-gray-500 text-sm mb-6">Your first dress is on us (well, 15% of it). Sign up to unlock your exclusive welcome discount.</p>
+            <div id="couponForm">
+                <input type="email" id="couponEmail" placeholder="Your email address" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gold mb-3">
+                <button id="couponSubmit" class="btn-gold w-full py-3 rounded-lg text-sm font-semibold">Unlock My Discount</button>
+            </div>
+            <div id="couponSuccess" class="hidden text-center">
+                <div class="discount-code inline-block px-6 py-3 rounded-lg text-gold font-bold text-2xl mb-2">AURELIA15</div>
+                <p class="text-gray-500 text-sm">Sent to your inbox too! Happy shopping ✨</p>
+            </div>
+            <p class="text-gray-400 text-xs mt-4">We respect your privacy. Unsubscribe anytime. <a href="#" class="underline hover:text-gray-500">Privacy Policy</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- ============ 10. CHAT WIDGET ============ -->
+<div id="chatWidget" class="chat-widget fixed bottom-32 right-6 z-[90] w-[380px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col" style="max-height:520px">
+    <div class="bg-gradient-to-r from-gold-dark to-gold px-5 py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-solid fa-headset text-white text-sm"></i></div>
+            <div>
+                <h4 class="text-white font-semibold text-sm">Aurelia Support</h4>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span><span class="text-white/70 text-xs">Online now</span></div>
+            </div>
+        </div>
+        <button onclick="toggleChat()" class="text-white/80 hover:text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition"><i class="fa-solid fa-xmark text-sm"></i></button>
+    </div>
+    <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:200px">
+        <div class="flex gap-2.5 items-start">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-sparkles text-white text-[10px]"></i></div>
+            <div class="bg-ivory rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[80%]">
+                <p class="text-sm text-charcoal leading-relaxed">Hi there! 👋 I'm your styling assistant. How can I help you today?</p>
+            </div>
+        </div>
+    </div>
+    <div id="chatQuickReplies" class="px-4 pb-3 flex flex-wrap gap-2 shrink-0">
+        <button class="chat-chip" data-q="shipping">🚚 Shipping Info</button>
+        <button class="chat-chip" data-q="returns">↩️ Returns Policy</button>
+        <button class="chat-chip" data-q="size">📐 Size Guide</button>
+        <button class="chat-chip" data-q="order">📦 Track Order</button>
+        <button class="chat-chip" data-q="styling">👗 Styling Tips</button>
+        <button class="chat-chip" data-q="discount">🏷️ Current Deals</button>
+    </div>
+    <div class="border-t border-gray-100 p-3 flex gap-2 shrink-0">
+        <input type="text" id="chatInput" placeholder="Type a message..." class="flex-1 px-4 py-2.5 bg-ivory rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gold/30">
+        <button id="chatSend" class="btn-gold w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-paper-plane text-sm"></i>
+        </button>
+    </div>
+</div>
+
+<!-- ============ 11. TREND PANEL (popup) ============ -->
+<div id="trendPopup" class="fixed bottom-[180px] right-6 z-[85] w-[340px] bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300" style="transform:translateY(20px) scale(0.95);opacity:0;pointer-events:none">
+    <div class="bg-gradient-to-r from-gold-dark to-gold px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-bell text-white"></i>
+            <h4 class="text-white font-semibold text-sm">Never Miss a Deal</h4>
+        </div>
+        <button onclick="toggleTrendPopup()" class="text-white/80 hover:text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 transition"><i class="fa-solid fa-xmark text-sm"></i></button>
+    </div>
+    <div class="p-5">
+        <p class="text-charcoal text-sm leading-relaxed mb-4">Get notified when your favorite styles go on sale. We'll send you <strong>personalized deals</strong> and new arrivals first.</p>
+        <div id="trendForm">
+            <input type="email" id="trendEmail" placeholder="Enter your email" class="w-full px-4 py-3 rounded-xl bg-ivory border border-gray-200 text-sm focus:outline-none focus:border-gold mb-3">
+            <button id="trendSubmit" class="btn-gold w-full py-3 rounded-xl text-sm font-semibold">Get Early Access</button>
+        </div>
+        <div id="trendSuccess" class="hidden text-center py-2">
+            <div class="text-2xl mb-2">🎉</div>
+            <p class="text-charcoal font-semibold text-sm">You're on the list!</p>
+            <p class="text-gray-400 text-xs mt-1">Check your inbox for a welcome surprise.</p>
+        </div>
+        <p class="text-gray-400 text-[11px] mt-3 text-center">No spam, ever. Unsubscribe anytime. <a href="#" class="underline hover:text-gray-500">Privacy Policy</a></p>
+    </div>
+</div>
+
+<!-- ============ 12. FLOATING BUTTONS ============ -->
+<div class="fixed bottom-6 right-6 z-[80] flex flex-col items-stretch gap-3 w-[220px]">
+    <button id="floatCoupon" onclick="openCouponModal()" class="bg-gradient-to-r from-gold to-gold-light text-white py-3 rounded-full text-sm font-semibold shadow-lg flex items-center gap-2.5 justify-center hover:scale-105 transition-transform">
+        <i class="fa-solid fa-gift text-base"></i> <span>Get My 15% Off</span>
+    </button>
+    <button id="trendBtn" onclick="toggleTrendPopup()" class="bg-gradient-to-r from-gold to-gold-light text-white py-3 rounded-full text-sm font-semibold shadow-lg flex items-center gap-2.5 justify-center hover:scale-105 transition-transform">
+        <i class="fa-solid fa-bell text-base"></i> <span>Be the First to Know</span>
+    </button>
+    <button id="floatChat" onclick="toggleChat()" class="bg-gradient-to-r from-charcoal to-charcoal/90 text-white py-3 rounded-full text-sm font-semibold shadow-lg flex items-center gap-2.5 justify-center hover:scale-105 transition-transform border border-white/10">
+        <i class="fa-regular fa-comments text-base text-gold"></i> <span>Ask a Question</span>
+    </button>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script>
+// --- Product Data ---
+const allProducts = [
+    { id:1, name:"Celestia A-Line Gown", price:79.99, orig:119.99, color:"blush", colors:["blush"],
+      occasions:["wedding","formal"], vibes:["romantic","classic"], length:"maxi", silhouette:"a-line",
+      badge:"Best Seller", gradient:"from-rose-200 to-pink-100" },
+    { id:2, name:"Midnight Velvet Dress", price:89.99, orig:null, color:"black", colors:["black"],
+      occasions:["cocktail","date"], vibes:["bold","minimal"], length:"midi", silhouette:"bodycon",
+      badge:"", gradient:"from-gray-300 to-gray-200" },
+    { id:3, name:"Aurora Wrap Dress", price:69.99, orig:99.99, color:"emerald", colors:["emerald"],
+      occasions:["wedding","cocktail"], vibes:["classic","boho"], length:"midi", silhouette:"wrap",
+      badge:"Sale", gradient:"from-emerald-200 to-green-100" },
+    { id:4, name:"Stardust Sequin Gown", price:119.99, orig:null, color:"gold", colors:["gold"],
+      occasions:["prom","formal"], vibes:["bold","romantic"], length:"maxi", silhouette:"mermaid",
+      badge:"New", gradient:"from-amber-200 to-yellow-100" },
+    { id:5, name:"Rosalind Slip Dress", price:59.99, orig:null, color:"burgundy", colors:["burgundy"],
+      occasions:["date","cocktail"], vibes:["minimal","bold"], length:"midi", silhouette:"bodycon",
+      badge:"Under $60", gradient:"from-red-200 to-rose-100" },
+    { id:6, name:"Evangeline Ball Gown", price:129.99, orig:159.99, color:"navy", colors:["navy"],
+      occasions:["prom","wedding","formal"], vibes:["romantic","classic"], length:"maxi", silhouette:"a-line",
+      badge:"", gradient:"from-blue-200 to-indigo-100" },
+    { id:7, name:"Isla One-Shoulder", price:74.99, orig:null, color:"red", colors:["red"],
+      occasions:["cocktail","date"], vibes:["bold"], length:"mini", silhouette:"bodycon",
+      badge:"Trending", gradient:"from-red-300 to-red-100" },
+    { id:8, name:"Seraphina Empire Gown", price:89.99, orig:null, color:"lavender", colors:["lavender"],
+      occasions:["prom","wedding"], vibes:["romantic","boho"], length:"maxi", silhouette:"empire",
+      badge:"", gradient:"from-purple-200 to-violet-100" },
+    { id:9, name:"Luna Satin Dress", price:84.99, orig:109.99, color:"black", colors:["black"],
+      occasions:["cocktail","date","formal"], vibes:["minimal","classic"], length:"midi", silhouette:"bodycon",
+      badge:"Sale", gradient:"from-gray-200 to-slate-100" },
+    { id:10, name:"Valentina Mermaid Gown", price:109.99, orig:null, color:"blush", colors:["blush"],
+      occasions:["wedding","formal"], vibes:["romantic","classic"], length:"maxi", silhouette:"mermaid",
+      badge:"", gradient:"from-pink-200 to-rose-100" },
+    { id:11, name:"Dahlia Wrap Maxi", price:79.99, orig:null, color:"ivory", colors:["ivory"],
+      occasions:["wedding","formal"], vibes:["boho","romantic"], length:"maxi", silhouette:"wrap",
+      badge:"New", gradient:"from-amber-100 to-orange-50" },
+    { id:12, name:"Noir Cocktail Dress", price:64.99, orig:89.99, color:"black", colors:["black"],
+      occasions:["cocktail","date"], vibes:["classic","minimal"], length:"mini", silhouette:"a-line",
+      badge:"Sale", gradient:"from-zinc-300 to-zinc-100" },
+];
+
+// --- Quiz Engine ---
+const quiz = {
+    step: 0,
+    totalSteps: 6,
+    answers: { occasion:[], vibe:[], colors:[], length:null, silhouette:[], size:null },
+
+    init() {
+        document.querySelectorAll('.opt-card').forEach(card => {
+            card.addEventListener('click', () => this.handleCardClick(card));
+        });
+        document.querySelectorAll('.color-swatch').forEach(sw => {
+            sw.addEventListener('click', () => this.handleSwatchClick(sw));
+        });
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.handleSizeClick(btn));
+        });
+        document.getElementById('quizNext').addEventListener('click', () => this.next());
+        document.getElementById('quizBack').addEventListener('click', () => this.back());
+        document.getElementById('quizSkip').addEventListener('click', () => this.next());
+        document.getElementById('smartSizeToggle').addEventListener('click', () => {
+            document.getElementById('smartFinder').classList.toggle('open');
+        });
+        document.getElementById('sfRecommend').addEventListener('click', () => this.smartRecommend());
+        this.updateUI();
+    },
+
+    handleCardClick(card) {
+        const container = card.parentElement;
+        const multi = container.dataset.multi === 'true';
+        if (multi) {
+            card.classList.toggle('selected');
+        } else {
+            container.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+    },
+
+    handleSwatchClick(sw) {
+        sw.classList.toggle('selected');
+    },
+
+    handleSizeClick(btn) {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    },
+
+    collectStepAnswers() {
+        const stepEl = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
+        if (this.step === 0) {
+            this.answers.occasion = [...stepEl.querySelectorAll('.opt-card.selected')].map(c => c.dataset.value);
+        } else if (this.step === 1) {
+            this.answers.vibe = [...stepEl.querySelectorAll('.opt-card.selected')].map(c => c.dataset.value);
+        } else if (this.step === 2) {
+            this.answers.colors = [...stepEl.querySelectorAll('.color-swatch.selected')].map(c => c.dataset.value);
+        } else if (this.step === 3) {
+            const sel = stepEl.querySelector('.opt-card.selected');
+            this.answers.length = sel ? sel.dataset.value : null;
+        } else if (this.step === 4) {
+            this.answers.silhouette = [...stepEl.querySelectorAll('.opt-card.selected')].map(c => c.dataset.value);
+        } else if (this.step === 5) {
+            const sel = stepEl.querySelector('.size-btn.selected');
+            this.answers.size = sel ? sel.dataset.value : null;
+        }
+    },
+
+    next() {
+        this.collectStepAnswers();
+        if (this.step < this.totalSteps) {
+            const current = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
+            current.classList.remove('active');
+            current.classList.add('exit-left');
+            this.step++;
+            if (this.step === 6) this.buildResults();
+            setTimeout(() => {
+                current.classList.remove('exit-left');
+                const next = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
+                next.classList.add('active');
+                this.updateUI();
+            }, 200);
+        }
+    },
+
+    back() {
+        if (this.step > 0) {
+            const current = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
+            current.classList.remove('active');
+            this.step--;
+            const prev = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
+            prev.classList.add('active');
+            this.updateUI();
+        }
+    },
+
+    updateUI() {
+        const pct = this.step === 6 ? 100 : Math.round((this.step / this.totalSteps) * 100);
+        document.getElementById('quizProgress').style.width = pct + '%';
+        document.getElementById('quizBack').classList.toggle('invisible', this.step === 0);
+        const isResults = this.step === 6;
+        document.getElementById('quizNav').classList.toggle('hidden', isResults);
+    },
+
+    smartRecommend() {
+        const h = document.getElementById('sfHeight').value;
+        const w = document.getElementById('sfWeight').value;
+        const f = document.getElementById('sfFit').value;
+        if (!h || !w) return;
+        const sizes = ['XS','S','S','M','M','L','L','XL'];
+        const wi = document.getElementById('sfWeight').selectedIndex;
+        const rec = sizes[Math.min(wi - 1, sizes.length - 1)] || 'M';
+        document.getElementById('sfSizeResult').textContent = rec;
+        document.getElementById('sfResult').classList.remove('hidden');
+        document.querySelectorAll('.size-btn').forEach(b => {
+            b.classList.toggle('selected', b.dataset.value === rec);
+        });
+    },
+
+    selectAll(field) {
+        if (field === 'colors') {
+            document.querySelectorAll('.color-swatch').forEach(sw => sw.classList.add('selected'));
+        }
+    },
+
+    getMatchedProducts() {
+        const a = this.answers;
+        let scored = allProducts.map(p => {
+            let score = 0;
+            if (a.occasion.length === 0 || a.occasion.includes('other')) score += 1;
+            else if (a.occasion.some(o => p.occasions.includes(o))) score += 3;
+            if (a.vibe.length === 0 || a.vibe.includes('any_vibe')) score += 1;
+            else if (a.vibe.some(v => p.vibes.includes(v))) score += 2;
+            if (a.colors.length === 0) score += 1;
+            else if (a.colors.some(c => p.colors.includes(c))) score += 2;
+            if (!a.length || a.length === 'any_length') score += 1;
+            else if (a.length === p.length) score += 3;
+            if (a.silhouette.length === 0 || a.silhouette.includes('any_silhouette')) score += 1;
+            else if (a.silhouette.includes(p.silhouette)) score += 2;
+            return { ...p, score };
+        });
+        scored.sort((a, b) => b.score - a.score);
+        return scored.slice(0, 6);
+    },
+
+    buildResults() {
+        const products = this.getMatchedProducts();
+        const container = document.getElementById('resultsContent');
+        container.innerHTML = `
+            <div class="text-center mb-8">
+                <h3 class="font-display text-3xl text-gold mb-2">Your Curated Collection</h3>
+                <p class="text-gray-500 text-sm">Handpicked just for you based on your preferences</p>
+            </div>
+            <div class="grid grid-cols-6 gap-3 mb-10">
+                ${products.map(p => `
+                    <div class="product-card bg-white rounded-xl overflow-hidden border border-gray-100 cursor-pointer">
+                        <div class="aspect-[3/4] bg-gradient-to-br ${p.gradient} relative flex items-center justify-center">
+                            <span class="text-5xl opacity-30">👗</span>
+                            ${p.badge ? `<span class="absolute top-3 left-3 bg-gold text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">${p.badge}</span>` : ''}
+                        </div>
+                        <div class="p-3">
+                            <h4 class="font-semibold text-sm truncate">${p.name}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-gold font-bold text-sm">$${p.price.toFixed(2)}</span>
+                                ${p.orig ? `<span class="text-gray-400 text-xs line-through">$${p.orig.toFixed(2)}</span>` : ''}
+                            </div>
+                            <div class="flex text-gold text-[10px] gap-0.5 mt-1">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <!-- Email capture in results -->
+            <div class="bg-white rounded-xl border border-gold/20 p-6 text-center">
+                <div id="resultsEmailForm">
+                    <p class="font-display text-xl text-charcoal mb-1">Save your picks &amp; unlock <span class="text-gold">15% off</span></p>
+                    <p class="text-gray-400 text-sm mb-5">We'll send your personalized collection straight to your inbox</p>
+                    <div class="flex gap-3 max-w-sm mx-auto">
+                        <input type="email" id="resultsEmail" placeholder="Your email address" class="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold">
+                        <button onclick="quiz.submitResultsEmail()" class="btn-gold px-6 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap">Send My Picks</button>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-3">We respect your privacy. Unsubscribe anytime. <a href="#" class="underline hover:text-gray-500">Privacy Policy</a></p>
+                </div>
+                <div id="resultsEmailSuccess" class="hidden">
+                    <div class="discount-code inline-block px-6 py-3 rounded-lg text-gold font-bold text-2xl mb-2">AURELIA15</div>
+                    <p class="text-gray-500 text-sm mb-1">Your 15% off first order code!</p>
+                    <p class="text-gray-400 text-xs">Collection &amp; code sent to your inbox ✨</p>
+                </div>
+            </div>
+            <div class="text-center mt-6">
+                <button onclick="quiz.restart()" class="text-gold text-sm font-medium hover:underline">← Retake Quiz</button>
+            </div>
+        `;
+    },
+
+    submitResultsEmail() {
+        const email = document.getElementById('resultsEmail').value;
+        if (!email || !email.includes('@')) {
+            document.getElementById('resultsEmail').style.borderColor = '#e74c3c';
+            return;
+        }
+        document.getElementById('resultsEmailForm').classList.add('hidden');
+        document.getElementById('resultsEmailSuccess').classList.remove('hidden');
+    },
+
+    restart() {
+        this.step = 0;
+        this.answers = { occasion:[], vibe:[], colors:[], length:null, silhouette:[], size:null };
+        document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active','exit-left'));
+        document.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.color-swatch').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.size-btn').forEach(c => c.classList.remove('selected'));
+        document.querySelector('.quiz-step[data-step="0"]').classList.add('active');
+        document.getElementById('smartFinder').classList.remove('open');
+        document.getElementById('sfResult').classList.add('hidden');
+        this.updateUI();
+    }
+};
+
+// --- Hero Carousel ---
+(function() {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    const featuredProducts = [
+        { tag: "Best Sellers", name: "Blush Chiffon<br>Wrap Dress" },
+        { tag: "Sale Up to 50% Off", name: "Coral Pleated<br>Sequin Gown" },
+        { tag: "Occasions", name: "Bridesmaid<br>Collection" },
+    ];
+    let current = 0;
+    let timer;
+
+    function goToSlide(idx) {
+        const card = document.getElementById('heroProductCard');
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        dots[current].style.width = '20px';
+        current = idx;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+        dots[current].style.width = '32px';
+
+        card.classList.add('fade-out');
+        setTimeout(() => {
+            document.getElementById('heroProductTag').textContent = featuredProducts[current].tag;
+            document.getElementById('heroProductName').innerHTML = featuredProducts[current].name;
+            card.classList.remove('fade-out');
+        }, 350);
+    }
+
+    function nextSlide() {
+        goToSlide((current + 1) % slides.length);
+    }
+
+    function startTimer() {
+        timer = setInterval(nextSlide, 5500);
+    }
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            clearInterval(timer);
+            goToSlide(parseInt(dot.dataset.dot));
+            startTimer();
+        });
+    });
+
+    startTimer();
+})();
+
+// --- Announcement Bar Rotation ---
+(function() {
+    const track = document.getElementById('announceTrack');
+    const items = track.children;
+    let idx = 0;
+    setInterval(() => {
+        idx = (idx + 1) % items.length;
+        track.style.transform = `translateY(-${idx * 20}px)`;
+    }, 3000);
+})();
+
+// --- Navbar scroll shadow ---
+window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('nav-scrolled', window.scrollY > 10);
+});
+
+// --- Scroll reveal ---
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// --- Reviews Carousel ---
+(function() {
+    const reviews = [
+        { img: 'images/reviews/review-01.jpg', name: 'Sarah M.', time: '2 weeks ago', stars: 5, title: 'Perfect bridesmaid dress!', text: 'Absolutely stunning! Got SO many compliments. The fabric feels luxurious and the fit was perfect right out of the box.', size: '5\'4" · Size M' },
+        { img: 'images/reviews/review-02.jpg', name: 'Jessica L.', time: '1 month ago', stars: 5, title: 'Felt like a princess at prom', text: 'The sequin detailing is gorgeous and not overdone. Best prom dress purchase ever — and the price was unbelievable.', size: '5\'7" · Size S' },
+        { img: 'images/reviews/review-03.jpg', name: 'Amanda K.', time: '3 weeks ago', stars: 5, title: 'Feeling pretty with everpretty', text: 'I\'m usually worried about ordering dresses online but this fit like a glove! True to the size chart.', size: '5\'2" · Size XL' },
+        { img: 'images/reviews/review-04.jpg', name: 'Michelle R.', time: '1 month ago', stars: 5, title: 'Perfect evening dress!!', text: 'This dress was beautiful! I wore it to a black tie event and received so many compliments on the color.', size: '5\'6" · Size L' },
+        { img: 'images/reviews/review-05.jpg', name: 'Emily W.', time: '2 months ago', stars: 4.5, title: 'Gorgeous quality at this price', text: 'The quality honestly shocked me. I\'ve ordered from designer brands that felt cheaper! Runs slightly long for petite.', size: '5\'9" · Size S' },
+        { img: 'images/reviews/review-06.jpg', name: 'Lauren T.', time: '3 weeks ago', stars: 5, title: 'Danced all night in comfort', text: 'Elegant, comfortable, and so easy to move in. I danced all night at the gala without any issues!', size: '5\'3" · Size M' },
+        { img: 'images/reviews/review-07.jpg', name: 'Olivia P.', time: '1 week ago', stars: 5, title: 'My go-to brand now', text: 'Third purchase and every single dress has been a hit. The wrap style is universally flattering. Highly recommend!', size: '5\'5" · Size M' },
+        { img: 'images/reviews/review-08.jpg', name: 'Diana C.', time: '2 weeks ago', stars: 5, title: 'Worth every penny', text: 'Ordered for my anniversary dinner. My husband\'s jaw literally dropped. The satin feels so luxurious on the skin.', size: '5\'8" · Size S' },
+        { img: 'images/reviews/review-09.jpg', name: 'Rachel B.', time: '1 month ago', stars: 4.5, title: 'Shipping was super fast', text: 'Arrived in 5 days and the packaging was so pretty! Dress exceeded expectations. Already planning my next order.', size: '5\'1" · Size XS' },
+        { img: 'images/reviews/review-10.jpg', name: 'Natalie H.', time: '3 weeks ago', stars: 5, title: 'Everyone asked where I got it', text: 'Wore this to a charity gala and I was stopped at least 10 times asking about the dress. Color is even prettier in person.', size: '5\'6" · Size L' }
+    ];
+
+    const track = document.getElementById('reviewsTrack');
+    const starsHTML = (count) => {
+        let s = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(count)) s += '<i class="fa-solid fa-star"></i>';
+            else if (i - count === 0.5) s += '<i class="fa-solid fa-star-half-stroke"></i>';
+            else s += '<i class="fa-regular fa-star"></i>';
+        }
+        return s;
+    };
+
+    reviews.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        card.innerHTML = `
+            <img src="${r.img}" alt="Customer review by ${r.name}" loading="lazy">
+            <div class="review-body">
+                <div class="text-xs text-gray-400 mb-2">${r.time}</div>
+                <div class="flex text-gold text-xs gap-0.5 mb-2">${starsHTML(r.stars)}</div>
+                <h4 class="font-semibold text-sm text-charcoal mb-1 leading-snug">${r.title}</h4>
+                <p class="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2">${r.text}</p>
+                <div class="flex items-center justify-between">
+                    <div class="text-xs text-gray-400">${r.name} · ${r.size}</div>
+                    <a href="#" class="shop-look">Shop this Look <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                </div>
+            </div>`;
+        track.appendChild(card);
+    });
+
+    const cardW = 280 + 20;
+    let pos = 0;
+    let autoSpeed = 0.5;
+    let rafId = null;
+    let hoverDir = 0;
+    const getMaxPos = () => Math.max(0, track.scrollWidth - track.parentElement.offsetWidth);
+
+    function applyPos() { track.style.transform = `translateX(-${pos}px)`; }
+
+    function autoScroll() {
+        if (hoverDir !== 0) {
+            pos += hoverDir * 3;
+        } else {
+            pos += autoSpeed;
+        }
+        const maxP = getMaxPos();
+        if (pos >= maxP) pos = 0;
+        if (pos < 0) pos = maxP;
+        applyPos();
+        rafId = requestAnimationFrame(autoScroll);
+    }
+    rafId = requestAnimationFrame(autoScroll);
+
+    const container = document.getElementById('reviewsCarousel');
+    container.addEventListener('mouseenter', () => { if (hoverDir === 0) cancelAnimationFrame(rafId); });
+    container.addEventListener('mouseleave', () => { hoverDir = 0; rafId = requestAnimationFrame(autoScroll); });
+
+    const prevBtn = document.getElementById('revPrev');
+    const nextBtn = document.getElementById('revNext');
+    prevBtn.addEventListener('mouseenter', () => { hoverDir = -1; rafId = requestAnimationFrame(autoScroll); });
+    prevBtn.addEventListener('mouseleave', () => { hoverDir = 0; cancelAnimationFrame(rafId); });
+    nextBtn.addEventListener('mouseenter', () => { hoverDir = 1; rafId = requestAnimationFrame(autoScroll); });
+    nextBtn.addEventListener('mouseleave', () => { hoverDir = 0; cancelAnimationFrame(rafId); });
+})();
+
+// --- Newsletter ---
+document.getElementById('nlSubmit').addEventListener('click', () => {
+    const email = document.getElementById('nlEmail').value;
+    if (!email || !email.includes('@')) { document.getElementById('nlEmail').style.borderColor='#e74c3c'; return; }
+    document.getElementById('nlForm').classList.add('hidden');
+    document.getElementById('nlSuccess').classList.remove('hidden');
+});
+
+// --- Coupon Modal ---
+function openCouponModal() {
+    const m = document.getElementById('couponModal');
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+}
+function closeCouponModal() {
+    const m = document.getElementById('couponModal');
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+    localStorage.setItem('aurelia_coupon_seen', '1');
+}
+document.getElementById('couponSubmit').addEventListener('click', () => {
+    const email = document.getElementById('couponEmail').value;
+    if (!email || !email.includes('@')) { document.getElementById('couponEmail').style.borderColor='#e74c3c'; return; }
+    document.getElementById('couponForm').classList.add('hidden');
+    document.getElementById('couponSuccess').classList.remove('hidden');
+    localStorage.setItem('aurelia_coupon_seen', '1');
+});
+// Auto-open on first visit (5s delay)
+setTimeout(() => {
+    if (!localStorage.getItem('aurelia_coupon_seen')) openCouponModal();
+}, 5000);
+
+// --- Chat Widget ---
+function toggleChat() {
+    document.getElementById('chatWidget').classList.toggle('open');
+}
+
+(function() {
+    const answers = {
+        shipping: "We offer **free standard shipping** on orders over $79! Standard delivery takes 5-8 business days. Express shipping (2-3 days) is available for $12.99.",
+        returns: "We have a **30-day hassle-free return** policy. Items must be unworn with tags attached. We'll even provide a prepaid return label!",
+        size: "Check our **Size Guide** in any product page. Pro tip: if you're between sizes, our customers recommend sizing up for a more comfortable fit.",
+        order: "You can track your order using the link in your shipping confirmation email. Need help? Just share your order number here!",
+        styling: "For a **wedding guest** look, we love pairing our wrap dresses with strappy heels and delicate jewelry. For **prom**, a statement clutch can elevate any gown!",
+        discount: "Great timing! 🔥 We currently have **up to 50% off** select styles, plus new subscribers get an extra **15% off** their first order!"
+    };
+    const msgBox = document.getElementById('chatMessages');
+    const chipBox = document.getElementById('chatQuickReplies');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+
+    function addMsg(html, isUser) {
+        const wrap = document.createElement('div');
+        wrap.className = isUser ? 'flex gap-2.5 items-start justify-end' : 'flex gap-2.5 items-start';
+        const bubble = `<div class="${isUser ? 'chat-bubble-user' : 'chat-bubble-bot'} px-4 py-2.5 max-w-[80%]"><p class="text-sm leading-relaxed">${html}</p></div>`;
+        const avatar = isUser ? '' : '<div class="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-sparkles text-white text-[10px]"></i></div>';
+        wrap.innerHTML = avatar + bubble;
+        msgBox.appendChild(wrap);
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+
+    function showTyping() {
+        const t = document.createElement('div');
+        t.id = 'typingIndicator';
+        t.className = 'flex gap-2.5 items-start';
+        t.innerHTML = '<div class="w-7 h-7 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-sparkles text-white text-[10px]"></i></div><div class="chat-bubble-bot px-4 py-3"><div class="chat-typing flex gap-1"><span></span><span></span><span></span></div></div>';
+        msgBox.appendChild(t);
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+
+    function removeTyping() { const t = document.getElementById('typingIndicator'); if (t) t.remove(); }
+
+    function handleChip(e) {
+        const q = e.target.dataset.q;
+        if (!q || !answers[q]) return;
+        addMsg(e.target.textContent, true);
+        showTyping();
+        setTimeout(() => { removeTyping(); addMsg(answers[q].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'), false); }, 800 + Math.random() * 600);
+    }
+
+    chipBox.querySelectorAll('.chat-chip').forEach(c => c.addEventListener('click', handleChip));
+
+    function sendUserMsg() {
+        const v = chatInput.value.trim();
+        if (!v) return;
+        addMsg(v, true);
+        chatInput.value = '';
+        showTyping();
+        setTimeout(() => { removeTyping(); addMsg("Thanks for your message! A member of our team will get back to you shortly. In the meantime, feel free to tap any quick question above. 💛", false); }, 1000);
+    }
+    chatSend.addEventListener('click', sendUserMsg);
+    chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendUserMsg(); });
+})();
+
+// --- Trend Popup ---
+function toggleTrendPopup() {
+    const p = document.getElementById('trendPopup');
+    const isOpen = p.style.opacity === '1';
+    if (isOpen) {
+        p.style.transform = 'translateY(20px) scale(0.95)';
+        p.style.opacity = '0';
+        p.style.pointerEvents = 'none';
+    } else {
+        p.style.transform = 'translateY(0) scale(1)';
+        p.style.opacity = '1';
+        p.style.pointerEvents = 'auto';
+    }
+}
+document.getElementById('trendSubmit').addEventListener('click', () => {
+    const email = document.getElementById('trendEmail').value.trim();
+    if (!email || !email.includes('@')) { document.getElementById('trendEmail').style.borderColor = '#e74c3c'; return; }
+    document.getElementById('trendForm').classList.add('hidden');
+    document.getElementById('trendSuccess').classList.remove('hidden');
+    document.getElementById('trendBtn').innerHTML = '<i class="fa-solid fa-check text-base"></i> <span>You\'re In!</span>';
+});
+
+// --- Init ---
+document.addEventListener('DOMContentLoaded', () => {
+    quiz.init();
+});
+</script>
+</body>
+</html>

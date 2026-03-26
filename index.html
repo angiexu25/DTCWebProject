@@ -209,6 +209,57 @@
             transition: opacity 0.35s ease;
         }
 
+        /* Mobile: quiz nav inline between title and options */
+        @media (max-width: 767px) {
+            .quiz-nav {
+                margin: 0 0 6px;
+                padding: 8px 0;
+                border-bottom: 1px solid rgba(201,168,76,0.12);
+                align-items: center;
+            }
+            .quiz-nav.quiz-nav-back-only {
+                margin-top: 0;
+                margin-bottom: 4px;
+                padding-top: 0;
+                padding-bottom: 6px;
+            }
+            .quiz-nav.hidden { display: none; }
+        }
+        .quiz-nav-back-only .quiz-nav-actions { display: none; }
+        .quiz-nav-no-skip #quizSkip { display: none; }
+        #quizNext:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* Quiz nav: align Back with Next row (same tap height as gold button) */
+        #quizBack {
+            background: transparent;
+            border: 0;
+            padding: 0.625rem 0.5rem 0.625rem 0;
+            margin: 0;
+            line-height: 1.25;
+            min-height: 2.75rem;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: inherit;
+        }
+        .quiz-nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-height: 2.75rem;
+        }
+        #quizSkip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 2.75rem;
+            padding: 0 0.25rem;
+            background: transparent;
+            border: 0;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
         /* Mobile: scene card tweaks */
         @media (max-width: 639px) {
             .scene-card .scene-desc { display: none; }
@@ -539,18 +590,18 @@
             <p class="text-gray-500 text-base">Answer a few quick questions — your personalized picks are moments away</p>
         </div>
 
-        <div id="quizContainer" class="quiz-glow rounded-2xl overflow-hidden reveal">
+        <div id="quizContainer" class="quiz-glow rounded-2xl overflow-hidden reveal scroll-mt-24 md:scroll-mt-0">
             <!-- Progress Bar -->
             <div class="h-1 bg-gold/10">
                 <div id="quizProgress" class="h-full bg-gradient-to-r from-gold to-gold-light rounded-full transition-all duration-500" style="width:0%"></div>
             </div>
 
-            <div class="p-8 md:p-12 min-h-[480px] flex flex-col">
+            <div class="p-4 sm:p-8 md:p-12 min-h-[480px] flex flex-col quiz-body">
                 <!-- Step 0: Occasion -->
                 <div class="quiz-step active" data-step="0">
                     <h3 class="font-display text-2xl mb-2 text-center text-gold">What's the occasion?</h3>
-                    <p class="text-gray-400 text-sm mb-8 text-center">Select one or more — or skip if you're just browsing</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" data-field="occasion" data-multi="true">
+                    <p class="text-gray-400 text-sm mb-8 text-center">What beautiful moment are you dressing for?</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" data-field="occasion" data-multi="false" data-auto-advance="true">
                         <div class="opt-card relative" data-value="wedding">
                             <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
                             <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/occasion-wedding.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f5e6e8,#e8d5d8)'"></div>
@@ -587,8 +638,8 @@
                 <!-- Step 1: Style Vibe -->
                 <div class="quiz-step" data-step="1">
                     <h3 class="font-display text-2xl mb-2 text-center text-gold">What's your style vibe?</h3>
-                    <p class="text-gray-400 text-sm mb-8 text-center">Pick the aesthetic that speaks to you</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" data-field="vibe" data-multi="true">
+                    <p class="text-gray-400 text-sm mb-2 md:mb-8 text-center">We'll match styles to your vibe</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" data-field="vibe" data-multi="false" data-auto-advance="true">
                         <div class="opt-card relative" data-value="classic">
                             <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
                             <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/vibe-classic.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#e8e4e0,#d8d4d0)'"></div>
@@ -625,7 +676,7 @@
                 <!-- Step 2: Color -->
                 <div class="quiz-step" data-step="2">
                     <h3 class="font-display text-2xl mb-2 text-center text-gold">Which colors speak to you?</h3>
-                    <p class="text-gray-400 text-sm mb-8 text-center">Select as many as you'd like</p>
+                    <p class="text-gray-400 text-sm mb-2 md:mb-8 text-center">Select as many as you'd like</p>
                     <div class="flex flex-wrap justify-center gap-6" data-field="colors" data-multi="true">
                         <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#1a1a1a" data-value="black"></div><span class="text-xs text-gray-500">Black</span></div>
                         <div class="text-center"><div class="color-swatch mx-auto mb-2" style="background:#c0392b" data-value="red"></div><span class="text-xs text-gray-500">Red</span></div>
@@ -645,8 +696,8 @@
                 <!-- Step 3: Length -->
                 <div class="quiz-step" data-step="3">
                     <h3 class="font-display text-2xl mb-2 text-center text-gold">How long do you want to go?</h3>
-                    <p class="text-gray-400 text-sm mb-8 text-center">Choose your preferred dress length</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-2xl mx-auto" data-field="length" data-multi="false">
+                    <p class="text-gray-400 text-sm mb-2 md:mb-8 text-center">Tap the length you want — we'll move on automatically</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-2xl mx-auto" data-field="length" data-multi="false" data-auto-advance="true">
                         <div class="opt-card relative" data-value="maxi">
                             <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
                             <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/length-maxi.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e8f0,#e0d8e0)'"></div>
@@ -685,8 +736,8 @@
                 <!-- Step 4: Silhouette -->
                 <div class="quiz-step" data-step="4">
                     <h3 class="font-display text-2xl mb-2 text-center text-gold">Pick your favorite silhouette</h3>
-                    <p class="text-gray-400 text-sm mb-8 text-center">What shape flatters you best?</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" data-field="silhouette" data-multi="true">
+                    <p class="text-gray-400 text-sm mb-2 md:mb-8 text-center">Tap one silhouette — you can go back if you change your mind</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" data-field="silhouette" data-multi="false" data-auto-advance="true">
                         <div class="opt-card relative" data-value="a-line">
                             <div class="check-mark"><i class="fa-solid fa-check text-xs"></i></div>
                             <div class="aspect-[3/4] overflow-hidden"><img src="images/quiz/silhouette-aline.png" class="w-full h-full object-cover" onerror="this.parentElement.style.background='linear-gradient(145deg,#f0e8e8,#e0d8d8)'"></div>
@@ -723,7 +774,7 @@
                 <!-- Step 5: Size -->
                 <div class="quiz-step" data-step="5">
                     <h3 class="font-display text-2xl mb-2 text-center text-gold">What's your size?</h3>
-                    <p class="text-gray-400 text-sm mb-8 text-center">We'll use this to show you the best fit</p>
+                    <p class="text-gray-400 text-sm mb-2 md:mb-8 text-center">We'll use this to show you the best fit</p>
                     <div class="flex flex-wrap justify-center gap-4 mb-6" data-field="size" data-multi="false">
                         <div class="size-btn" data-value="XS">XS</div>
                         <div class="size-btn" data-value="S">S</div>
@@ -795,14 +846,14 @@
                 </div>
 
                 <!-- Navigation Buttons -->
-                <div class="mt-auto pt-6 flex items-center justify-between" id="quizNav">
-                    <button id="quizBack" class="text-gray-400 hover:text-charcoal transition-colors text-sm flex items-center gap-1 invisible">
+                <div class="mt-auto pt-4 sm:pt-6 flex items-center justify-between quiz-nav" id="quizNav">
+                    <button type="button" id="quizBack" class="text-gray-400 hover:text-charcoal transition-colors text-sm gap-1 invisible">
                         <i class="fa-solid fa-chevron-left text-xs"></i> Back
                     </button>
-                    <div class="flex items-center gap-3">
-                        <button id="quizSkip" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Skip</button>
-                        <button id="quizNext" class="btn-gold px-7 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2">
-                            Next <i class="fa-solid fa-chevron-right text-xs"></i>
+                    <div class="quiz-nav-actions">
+                        <button type="button" id="quizSkip" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Skip</button>
+                        <button type="button" id="quizNext" class="btn-gold px-5 sm:px-7 py-2.5 rounded-full text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 text-center leading-snug">
+                            <span id="quizNextText">Next</span><i id="quizNextChevron" class="fa-solid fa-chevron-right text-xs shrink-0" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -1098,6 +1149,7 @@ const quiz = {
         });
         document.getElementById('sfRecommend').addEventListener('click', () => this.smartRecommend());
         this.updateUI();
+        window.addEventListener('resize', () => this.positionNav());
     },
 
     handleCardClick(card) {
@@ -1108,6 +1160,9 @@ const quiz = {
         } else {
             container.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
+            if (container.dataset.autoAdvance === 'true') {
+                setTimeout(() => this.next(), 350);
+            }
         }
     },
 
@@ -1118,21 +1173,25 @@ const quiz = {
     handleSizeClick(btn) {
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
+        this.updateUI();
     },
 
     collectStepAnswers() {
         const stepEl = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
         if (this.step === 0) {
-            this.answers.occasion = [...stepEl.querySelectorAll('.opt-card.selected')].map(c => c.dataset.value);
+            const sel = stepEl.querySelector('.opt-card.selected');
+            this.answers.occasion = sel ? [sel.dataset.value] : [];
         } else if (this.step === 1) {
-            this.answers.vibe = [...stepEl.querySelectorAll('.opt-card.selected')].map(c => c.dataset.value);
+            const sel = stepEl.querySelector('.opt-card.selected');
+            this.answers.vibe = sel ? [sel.dataset.value] : [];
         } else if (this.step === 2) {
             this.answers.colors = [...stepEl.querySelectorAll('.color-swatch.selected')].map(c => c.dataset.value);
         } else if (this.step === 3) {
             const sel = stepEl.querySelector('.opt-card.selected');
             this.answers.length = sel ? sel.dataset.value : null;
         } else if (this.step === 4) {
-            this.answers.silhouette = [...stepEl.querySelectorAll('.opt-card.selected')].map(c => c.dataset.value);
+            const sel = stepEl.querySelector('.opt-card.selected');
+            this.answers.silhouette = sel ? [sel.dataset.value] : [];
         } else if (this.step === 5) {
             const sel = stepEl.querySelector('.size-btn.selected');
             this.answers.size = sel ? sel.dataset.value : null;
@@ -1141,6 +1200,7 @@ const quiz = {
 
     next() {
         this.collectStepAnswers();
+        if (this.step === 5 && !this.answers.size) return;
         if (this.step < this.totalSteps) {
             const current = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
             current.classList.remove('active');
@@ -1152,6 +1212,7 @@ const quiz = {
                 const next = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
                 next.classList.add('active');
                 this.updateUI();
+                this.scrollQuizIntoView();
             }, 200);
         }
     },
@@ -1164,15 +1225,64 @@ const quiz = {
             const prev = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
             prev.classList.add('active');
             this.updateUI();
+            this.scrollQuizIntoView();
         }
+    },
+
+    scrollQuizIntoView() {
+        if (!window.matchMedia('(max-width: 767px)').matches) return;
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const el = document.getElementById('quizContainer');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
     },
 
     updateUI() {
         const pct = this.step === 6 ? 100 : Math.round((this.step / this.totalSteps) * 100);
         document.getElementById('quizProgress').style.width = pct + '%';
         document.getElementById('quizBack').classList.toggle('invisible', this.step === 0);
-        const isResults = this.step === 6;
-        document.getElementById('quizNav').classList.toggle('hidden', isResults);
+        const hideNav = this.step === 0 || this.step === 6;
+        const nav = document.getElementById('quizNav');
+        nav.classList.toggle('hidden', hideNav);
+        nav.classList.toggle('quiz-nav-back-only', [1, 3, 4].includes(this.step));
+        nav.classList.toggle('quiz-nav-final-step', this.step === 5);
+        nav.classList.toggle('quiz-nav-no-skip', this.step === 2 || this.step === 5);
+
+        const nextBtn = document.getElementById('quizNext');
+        const nextText = document.getElementById('quizNextText');
+        const nextChevron = document.getElementById('quizNextChevron');
+        if (this.step === 5) {
+            nextText.textContent = 'Show my dresses';
+            nextChevron.classList.add('hidden');
+            const hasSize = !!document.querySelector('.quiz-step[data-step="5"] .size-btn.selected');
+            nextBtn.disabled = !hasSize;
+        } else {
+            nextText.textContent = 'Next';
+            nextChevron.classList.remove('hidden');
+            nextBtn.disabled = false;
+        }
+
+        this.positionNav();
+    },
+
+    positionNav() {
+        const nav = document.getElementById('quizNav');
+        const quizBody = document.querySelector('.quiz-body');
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+        if (isMobile && this.step < 6) {
+            const activeStep = document.querySelector('.quiz-step.active');
+            if (activeStep) {
+                const desc = activeStep.querySelector('h3 + p');
+                if (desc) {
+                    desc.after(nav);
+                    return;
+                }
+            }
+        }
+        quizBody.appendChild(nav);
     },
 
     smartRecommend() {
@@ -1188,6 +1298,7 @@ const quiz = {
         document.querySelectorAll('.size-btn').forEach(b => {
             b.classList.toggle('selected', b.dataset.value === rec);
         });
+        this.updateUI();
     },
 
     selectAll(field) {
@@ -1220,25 +1331,35 @@ const quiz = {
         const products = this.getMatchedProducts();
         const container = document.getElementById('resultsContent');
         container.innerHTML = `
-            <div class="text-center mb-8">
+            <div class="text-center mb-3">
                 <h3 class="font-display text-3xl text-gold mb-2">Your Curated Collection</h3>
                 <p class="text-gray-500 text-sm">Handpicked just for you based on your preferences</p>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-10">
+            <div id="resultsQuickEmailForm" class="mb-3 flex flex-row flex-nowrap gap-2 items-stretch max-w-xl mx-auto w-full">
+                <input type="email" id="resultsQuickEmail" placeholder="Send me my picks to my email" autocomplete="email" class="flex-1 min-w-0 border border-gray-200 rounded-full pl-3 pr-3 py-2 text-xs sm:text-sm bg-white focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/25">
+                <button type="button" onclick="quiz.submitQuickResultsEmail()" class="btn-gold rounded-full px-4 py-2 text-sm font-semibold shrink-0 whitespace-nowrap">Send</button>
+            </div>
+            <p id="resultsQuickEmailSuccess" class="hidden mb-3 text-center text-sm text-gold font-medium">Sent — check your inbox ✨</p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-10 items-start">
                 ${products.map(p => `
                     <div class="product-card bg-white rounded-xl overflow-hidden border border-gray-100 cursor-pointer">
                         <div class="aspect-[3/4] bg-gradient-to-br ${p.gradient} relative flex items-center justify-center">
                             <span class="text-5xl opacity-30">👗</span>
                             ${p.badge ? `<span class="absolute top-3 left-3 bg-gold text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">${p.badge}</span>` : ''}
                         </div>
-                        <div class="p-3">
-                            <h4 class="font-semibold text-sm truncate">${p.name}</h4>
-                            <div class="flex items-center gap-2 mt-1">
+                        <div class="p-2.5 flex flex-col">
+                            <h4 class="font-semibold text-sm truncate pr-1 leading-snug">${p.name}</h4>
+                            <div class="flex items-center gap-2 mt-0.5">
                                 <span class="text-gold font-bold text-sm">$${p.price.toFixed(2)}</span>
                                 ${p.orig ? `<span class="text-gray-400 text-xs line-through">$${p.orig.toFixed(2)}</span>` : ''}
                             </div>
-                            <div class="flex text-gold text-[10px] gap-0.5 mt-1">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                            <div class="flex items-center justify-between gap-2 mt-1">
+                                <div class="flex text-gold text-[10px] gap-0.5 shrink-0">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                                </div>
+                                <button type="button" class="btn-gold w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-white shadow-sm hover:shadow-md transition-shadow" title="Add to cart" aria-label="Add ${p.name} to cart">
+                                    <i class="fa-solid fa-bag-shopping text-sm"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1251,7 +1372,7 @@ const quiz = {
                     <p class="text-gray-400 text-sm mb-5">We'll send your personalized collection straight to your inbox</p>
                     <div class="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
                         <input type="email" id="resultsEmail" placeholder="Your email address" class="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gold">
-                        <button onclick="quiz.submitResultsEmail()" class="btn-gold px-6 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap">Send My Picks</button>
+                        <button type="button" onclick="quiz.submitResultsEmail()" class="btn-gold px-6 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap">Send my picks</button>
                     </div>
                     <p class="text-gray-400 text-xs mt-3">We respect your privacy. Unsubscribe anytime. <a href="#" class="underline hover:text-gray-500">Privacy Policy</a></p>
                 </div>
@@ -1277,6 +1398,19 @@ const quiz = {
         document.getElementById('resultsEmailSuccess').classList.remove('hidden');
     },
 
+    submitQuickResultsEmail() {
+        const input = document.getElementById('resultsQuickEmail');
+        if (!input) return;
+        const email = input.value.trim();
+        if (!email || !email.includes('@')) {
+            input.style.borderColor = '#e74c3c';
+            return;
+        }
+        input.style.borderColor = '';
+        document.getElementById('resultsQuickEmailForm').classList.add('hidden');
+        document.getElementById('resultsQuickEmailSuccess').classList.remove('hidden');
+    },
+
     restart() {
         this.step = 0;
         this.answers = { occasion:[], vibe:[], colors:[], length:null, silhouette:[], size:null };
@@ -1288,6 +1422,7 @@ const quiz = {
         document.getElementById('smartFinder').classList.remove('open');
         document.getElementById('sfResult').classList.add('hidden');
         this.updateUI();
+        this.scrollQuizIntoView();
     }
 };
 
